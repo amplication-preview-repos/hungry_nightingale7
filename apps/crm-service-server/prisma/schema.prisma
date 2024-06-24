@@ -1,0 +1,69 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Property {
+  address   String?
+  contracts Contract[]
+  createdAt DateTime   @default(now())
+  id        String     @id @default(cuid())
+  name      String?
+  size      Int?
+  updatedAt DateTime   @updatedAt
+}
+
+model Client {
+  contracts   Contract[]
+  createdAt   DateTime   @default(now())
+  email       String?
+  firstName   String?
+  id          String     @id @default(cuid())
+  lastName    String?
+  phoneNumber String?
+  updatedAt   DateTime   @updatedAt
+}
+
+model Prestataire {
+  contracts   Contract[]
+  createdAt   DateTime   @default(now())
+  email       String?
+  id          String     @id @default(cuid())
+  name        String?
+  serviceType String?
+  updatedAt   DateTime   @updatedAt
+}
+
+model Contract {
+  client        Client?        @relation(fields: [clientId], references: [id])
+  clientId      String?
+  createdAt     DateTime       @default(now())
+  endDate       DateTime?
+  id            String         @id @default(cuid())
+  prestataire   Prestataire?   @relation(fields: [prestataireId], references: [id])
+  prestataireId String?
+  property      Property?      @relation(fields: [propertyId], references: [id])
+  propertyId    String?
+  startDate     DateTime?
+  updatedAt     DateTime       @updatedAt
+  verifications Verification[]
+}
+
+model Verification {
+  contract             Contract?               @relation(fields: [contractId], references: [id])
+  contractId           String?
+  createdAt            DateTime                @default(now())
+  date                 DateTime?
+  id                   String                  @id @default(cuid())
+  status               EnumVerificationStatus?
+  updatedAt            DateTime                @updatedAt
+  verificationDocument Json?
+}
+
+enum EnumVerificationStatus {
+  Option1
+}
